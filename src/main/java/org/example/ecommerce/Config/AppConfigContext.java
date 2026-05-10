@@ -9,17 +9,33 @@ import jakarta.servlet.annotation.WebListener;
 @WebListener
 public class AppConfigContext implements ServletContextListener {
 
+    private static ServletContext context;
+
+    public static ServletContext getContext() {
+        return context;
+    }
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        ServletContext ctx = sce.getServletContext();
 
-        ctx.setAttribute("dbHost",   DBCApplication.HOST);
-        ctx.setAttribute("dbName",   DBCApplication.DB_NAME);
-        ctx.setAttribute("dbPort",   DBCApplication.PORT);
-        ctx.setAttribute("dbUser",   DBCApplication.USERNAME);
-        ctx.setAttribute("dbPass",   DBCApplication.PASSWORD);
+        context = sce.getServletContext();
 
-        ctx.setAttribute("objectMapper", new ObjectMapper());
+        String host   = context.getInitParameter("dbHost");
+        String dbName = context.getInitParameter("dbName");
+        String port   = context.getInitParameter("dbPort");
+        String user   = context.getInitParameter("dbUser");
+        String pass   = context.getInitParameter("dbPass");
+
+        String url = String.format(
+                "jdbc:mysql://%s:%s/%s?useSSL=false&serverTimezone=UTC",
+                host, port, dbName
+        );
+
+        context.setAttribute("dbUrl",  url);
+        context.setAttribute("dbUser", user);
+        context.setAttribute("dbPass", pass);
+
+        context.setAttribute("objectMapper", new ObjectMapper());
 
         System.out.println("App initialized — DB config & ObjectMapper ready.");
     }

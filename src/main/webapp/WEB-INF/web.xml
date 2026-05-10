@@ -3,4 +3,30 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
+
+
+    <context-param>
+        <param-name>dbHost</param-name>
+        <param-value>127.0.0.1</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>dbName</param-name>
+        <param-value>ecommerce_system</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>dbPort</param-name>
+        <param-value>3306</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>dbUser</param-name>
+        <param-value>root</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>dbPass</param-name>
+        <param-value></param-value>
+    </context-param>
 </web-app>
