@@ -2,8 +2,8 @@ package org.example.ecommerce.DAO.DaoImpl;
 
 
 import org.example.ecommerce.Config.DBCApplication;
-import org.example.ecommerce.DAO.OrderItemDao;
-import org.example.ecommerce.models.OrderItem;
+import org.example.ecommerce.DAO.DaoInterfaces.OrderItemDao;
+import org.example.ecommerce.Models.OrderItem;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

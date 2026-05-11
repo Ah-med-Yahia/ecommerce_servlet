@@ -1,59 +1,41 @@
 package org.example.ecommerce.DAO.DaoImpl;
 
 import org.example.ecommerce.Config.DBCApplication;
-import org.example.ecommerce.DAO.ProductDAO;
-import org.example.ecommerce.models.Product;
+import org.example.ecommerce.DAO.DaoInterfaces.ProductDAO;
+import org.example.ecommerce.Models.Product;
 import java.sql.*;
         import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDaoImpl implements ProductDAO {
 
-
-    private Product mapRow(ResultSet rs) throws SQLException {
-        return new Product(
-                rs.getInt("id"),
-                rs.getInt("category_id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getBigDecimal("price"),
-                rs.getInt("stock"),
-                rs.getString("image_url"),
-                rs.getTimestamp("created_at")
-        );
-    }
-
     @Override
-    public List<Product> getAll() {
-        List<Product> list = new ArrayList<>();
+    public List<Product> findAll() {
+        List<Product> products = new ArrayList<>();
+        String sql = "SELECT * FROM products";
+        try (Connection conn = DBCApplication.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
-        try (
-                Connection conn = DBCApplication.getConnection();
-                PreparedStatement ps = conn.prepareStatement("SELECT * FROM products");
-                ResultSet rs = ps.executeQuery()
-        ) {
             while (rs.next()) {
-                list.add(mapRow(rs));
+                products.add(mapRow(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return list;
+        return products;
     }
 
     @Override
-    public Product getById(int id) {
-        try (
-                Connection conn = DBCApplication.getConnection();
-                PreparedStatement ps = conn.prepareStatement("SELECT * FROM products WHERE id = ?")
-        ) {
-            ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapRow(rs);
-                }
-            }
+    public Product findById(int id) {
+        String sql = "SELECT * FROM products WHERE id = ?";
+        try (Connection conn = DBCApplication.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return mapRow(rs);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -61,77 +43,94 @@ public class ProductDaoImpl implements ProductDAO {
     }
 
     @Override
-    public List<Product> getByCategory(int categoryId) {
-        List<Product> list = new ArrayList<>();
-        try (
-                Connection conn = DBCApplication.getConnection();
-                PreparedStatement ps = conn.prepareStatement("SELECT * FROM products WHERE category_id = ?")
-        ) {
-            ps.setInt(1, categoryId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    list.add(mapRow(rs));
-                }
+    public Product save(Product product) {
+        String sql = "INSERT INTO products(name, description, price, stock, category_id) VALUES(?, ?, ?, ?, ?)";
+        try (Connection conn = DBCApplication.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setString(1, product.getName());
+            stmt.setString(2, product.getDescription());
+            stmt.setBigDecimal(3, product.getPrice());
+            stmt.setInt(4, product.getStock());
+            if (product.getCategoryId() != null)
+                stmt.setInt(5, product.getCategoryId());
+            else
+                stmt.setNull(5, Types.INTEGER);
+
+            stmt.executeUpdate();
+            ResultSet keys = stmt.getGeneratedKeys();
+            if (keys.next()) {
+                return findById(keys.getInt(1));
             }
+            return product;
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return list;
+        return null;
     }
 
     @Override
-    public void add(Product p) {
-        try (
-                Connection conn = DBCApplication.getConnection();
-                PreparedStatement ps = conn.prepareStatement(
-                        "INSERT INTO products (category_id, name, description, price, stock, image_url) " +
-                                "VALUES (?, ?, ?, ?, ?, ?)"
-                )
-        ) {
-            ps.setInt(1, p.getCategoryId());
-            ps.setString(2, p.getName());
-            ps.setString(3, p.getDescription());
-            ps.setBigDecimal(4, p.getPrice());
-            ps.setInt(5, p.getStock());
-            ps.setString(6, p.getImageUrl());
-            ps.executeUpdate();
+    public Product update(Product product) {
+        String sql = "UPDATE products SET name=?, description=?, price=?, stock=?, category_id=? WHERE id=?";
+        try (Connection conn = DBCApplication.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, product.getName());
+            stmt.setString(2, product.getDescription());
+            stmt.setBigDecimal(3, product.getPrice());
+            stmt.setInt(4, product.getStock());
+            if (product.getCategoryId() != null)
+                stmt.setInt(5, product.getCategoryId());
+            else
+                stmt.setNull(5, Types.INTEGER);
+            stmt.setInt(6, product.getId());
+            stmt.executeUpdate();
+            return findById(product.getId());
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     @Override
-    public void update(Product p) {
-        try (
-                Connection conn = DBCApplication.getConnection();
-                PreparedStatement ps = conn.prepareStatement(
-                        "UPDATE products SET category_id=?, name=?, description=?, " +
-                                "price=?, stock=?, image_url=? WHERE id=?"
-                )
-        ) {
-            ps.setInt(1, p.getCategoryId());
-            ps.setString(2, p.getName());
-            ps.setString(3, p.getDescription());
-            ps.setBigDecimal(4, p.getPrice());
-            ps.setInt(5, p.getStock());
-            ps.setString(6, p.getImageUrl());
-            ps.setInt(7, p.getId());
-            ps.executeUpdate();
+    public boolean delete(int id) {
+        String sql = "DELETE FROM products WHERE id = ?";
+        try (Connection conn = DBCApplication.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
-    @Override
-    public void delete(int id) {
-        try (
-                Connection conn = DBCApplication.getConnection();
-                PreparedStatement ps = conn.prepareStatement("DELETE FROM products WHERE id = ?")
-        ) {
-            ps.setInt(1, id);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    private Product mapRow(ResultSet rs) throws SQLException {
+        Product p = new Product();
+        p.setId(rs.getInt("id"));
+        p.setName(rs.getString("name"));
+        p.setDescription(rs.getString("description"));
+        p.setPrice(rs.getBigDecimal("price"));
+        p.setStock(rs.getInt("stock"));
+        int catId = rs.getInt("category_id");
+        p.setCategoryId(rs.wasNull() ? null : catId);
+
+        p.setCreatedAt(
+                rs.getTimestamp("created_at") != null
+                        ? rs.getTimestamp("created_at").toLocalDateTime()
+                        : null
+        );
+
+        p.setUpdatedAt(
+                rs.getTimestamp("updated_at") != null
+                        ? rs.getTimestamp("updated_at").toLocalDateTime()
+                        : null
+        );
+
+        return p;
     }
 }

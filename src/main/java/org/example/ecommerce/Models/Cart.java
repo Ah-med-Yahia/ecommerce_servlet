@@ -1,22 +1,20 @@
-package org.example.ecommerce.models;
+package org.example.ecommerce.Models;
 
-import java.math.BigDecimal;
+public class Cart {
 
-public class OrderItem {
     private int id;
-    private int orderId;
+    private int userId;
     private int productId;
     private int quantity;
-    private BigDecimal price;
 
-    public OrderItem() {}
+    public Cart() {
+    }
 
-    public OrderItem(int id, int orderId, int productId, int quantity, BigDecimal price) {
+    public Cart(int id, int userId, int productId, int quantity) {
         this.id = id;
-        this.orderId = orderId;
+        this.userId = userId;
         this.productId = productId;
         this.quantity = quantity;
-        this.price = price;
     }
 
     public int getId() {
@@ -27,12 +25,12 @@ public class OrderItem {
         this.id = id;
     }
 
-    public int getOrderId() {
-        return orderId;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public int getProductId() {
@@ -49,13 +47,5 @@ public class OrderItem {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
     }
 }

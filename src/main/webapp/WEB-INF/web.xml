@@ -29,4 +29,13 @@
         <param-name>dbPass</param-name>
         <param-value></param-value>
     </context-param>
+
+    <context-param>
+        <param-name>redisHost</param-name>
+        <param-value>localhost</param-value>
+    </context-param>
+    <context-param>
+        <param-name>redisPort</param-name>
+        <param-value>6379</param-value>
+    </context-param>
 </web-app>

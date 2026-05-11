@@ -1,30 +1,36 @@
-package org.example.ecommerce.models;
+package org.example.ecommerce.Models;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class Product {
+
     private int id;
-    private int categoryId;
     private String name;
     private String description;
     private BigDecimal price;
     private int stock;
-    private String imageUrl;
-    private Timestamp createdAt;
+    private Integer categoryId;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdAt;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updatedAt;
 
-    public Product() {}
+    public Product() {
+    }
 
-    public Product(int id, int categoryId, String name, String description,
-                   BigDecimal price, int stock, String imageUrl, Timestamp createdAt) {
+    public Product(int id, String name, String description, BigDecimal price, int stock, Integer categoryId, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
-        this.categoryId = categoryId;
         this.name = name;
         this.description = description;
         this.price = price;
         this.stock = stock;
-        this.imageUrl = imageUrl;
+        this.categoryId = categoryId;
         this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public int getId() {
@@ -33,14 +39,6 @@ public class Product {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
     }
 
     public String getName() {
@@ -67,27 +65,35 @@ public class Product {
         this.price = price;
     }
 
-    public int getStock() {
-        return stock;
-    }
-
     public void setStock(int stock) {
         this.stock = stock;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public int getStock() {
+        return stock;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public Integer getCategoryId() {
+        return categoryId;
     }
 
-    public Timestamp getCreatedAt() {
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

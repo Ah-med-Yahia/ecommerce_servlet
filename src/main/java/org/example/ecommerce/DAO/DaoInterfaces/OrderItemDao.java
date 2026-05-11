@@ -1,6 +1,6 @@
-package org.example.ecommerce.DAO;
+package org.example.ecommerce.DAO.DaoInterfaces;
 
-import org.example.ecommerce.models.OrderItem;
+import org.example.ecommerce.Models.OrderItem;
 import java.util.List;
 
 public interface OrderItemDao {
